@@ -20,7 +20,7 @@
         Class.prototype.__proto__ = parent.prototype;
         
         //If we haven't defined our own constructor, use a function that will call the parent.
-        if(Class.toString() == noop.toString()){
+        if(Class == noop){
           this.construct(function(){
             parent.apply(this, arguments);
           });
@@ -78,7 +78,7 @@
         
       },
       
-      //Returns the class (Also returned by the new keyword).
+      //Returns the class.
       finalize: function(){
         return Class;
       }
@@ -86,7 +86,7 @@
     });
     
     //Add a default noop constructor.
-    ClassFactory.construct(function(){});
+    ClassFactory.construct(noop);
     
     //Return the class-factory.
     return ClassFactory;
