@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Another JavaScript MVC framework that makes use Underscore.js and jQuery or Zepto.
+Another JavaScript MVC framework that makes use of Underscore.js and jQuery or Zepto.
 
 This is the framework that will be used in the
 [Tuxion.Framework](https://github.com/Tuxion/tuxion.framework).
