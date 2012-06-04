@@ -23,20 +23,19 @@
       }
       
       this.Mixin.mixins.push(mixin);
-      
       return this;
       
     },
     
     //Add static members.
     statics: function(map){
-      this.Mixin.statics = _(this.Mixin.statics).extend(map);
+      _(this.Mixin.statics).extend(map);
       return this;
     },
     
     //Add normal members.
     members: function(map){
-      this.Mixin.members = _(this.Mixin.members).extend(map);
+      _(this.Mixin.members).extend(map);
       return this;
     },
     
