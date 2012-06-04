@@ -15,7 +15,7 @@
       this.Class.__proto__ = this.Class.parent = parent;
       
       //Add the prototype of our parent to our own prototype.
-      this.Class.prototype.__proto__ = parent.prototype;
+      this.Class.prototype.__proto__ = this.Class.prototype.parent = parent.prototype;
       
       //If we haven't defined our own constructor, use a function that will call the parent.
       if(this.Class == this.noop){
@@ -23,9 +23,6 @@
           parent.apply(this, arguments);
         });
       }
-      
-      //Keep an easy reference to parent.
-      this.Class.prototype.parent = parent;
       
       //Enable chaining.
       return this;
@@ -56,9 +53,7 @@
       _(this.Class).extend(oldStatics);
       
       //Add a reference to the class' static members from within the class' normal members.
-      _(this.Class.prototype).extend({
-        static: this.Class
-      });
+      this.Class.prototype.static = constructor;
       
       //Enable chaining.
       return this;
