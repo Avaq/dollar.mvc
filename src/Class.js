@@ -1,5 +1,6 @@
 ;(function(window, _, $, undefined){
   
+  //Define the ClassFactory.
   var ClassFactory = $.mvc.ClassFactory = function(Class){
     this.Class = this.noop = Class;
   }

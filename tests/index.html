@@ -11,48 +11,40 @@
     
     <script type="text/javascript" src="../src/dollar.mvc.js"></script>
     <script type="text/javascript" src="../src/Class.js"></script>
+    <script type="text/javascript" src="../src/Mixin.js"></script>
     
     <script type="text/javascript">
-    
-      var Dog = new $.mvc.Class()
-        
-        .statics({
-          dogs: [],
-          getNumber: function(i){
-            return this.dogs[i-1];
-          }
-        })
-        
-        .construct(function(name){
-          this.name = name || this.name;
-          this.static.dogs.push(this);
-        })
-        
-        .members({
-          name: 'Straydog',
-          bark: function(){
-            alert("Woof!");
-          }
-        })
-        
-      .finalize();
-        
-      var Husky = (new $.mvc.Class).extends(Dog)
       
-        .statics({
-          dogs: []
-        })
-        
-        .construct(function(name, gender){
-          this.parent.call(this, name);
-          this.gender = gender;
-        })
-      
+      var Legged = $.mvc.Mixin()
+      .members({
+        legCount: -1,
+        walk: function(){
+          for(var i = 0; i < this.legCount; i++){
+            console.log(i%2==0 ? 'tip' : 'tap');
+          }
+          return this;
+        }
+      })
       .finalize();
       
+      var FourLegs = $.mvc.Mixin()
+      .use(Legged)
+      .members({
+        legCount: 4
+      })
+      .finalize();
       
-    
-      //var fifi = new Dog;
+      var Dog = $.mvc.Class()
+      .use(FourLegs)
+      .members({
+        bark: function(){
+          console.log('Woof!');
+        }
+        return this;
+      })
+      .finalize();
+      
+      var myDog = new Dog;
     
     </script>
     
