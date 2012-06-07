@@ -1,4 +1,4 @@
-;(function(window, _, $, undefined){
+;(function(root, _, $, undefined){
   
   //Define the MixinFactory.
   var MixinFactory = $.mvc.MixinFactory = function(mixin){
@@ -87,4 +87,4 @@
     
   });
   
-})(window, _, (jQuery || Zepto || $ || ($={})));
+})(this, _, $);

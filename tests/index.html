@@ -15,36 +15,41 @@
     
     <script type="text/javascript">
       
-      var Legged = $.mvc.Mixin()
+      var Human = $.mvc.Class()
+      .statics({
+        test: function(){
+          console.log('Human static test.');
+        }
+      })
       .members({
-        legCount: -1,
-        walk: function(){
-          for(var i = 0; i < this.legCount; i++){
-            console.log(i%2==0 ? 'tip' : 'tap');
-          }
-          return this;
+        test: function(){
+          console.log('Human normal test.');
         }
       })
       .finalize();
       
-      var FourLegs = $.mvc.Mixin()
-      .use(Legged)
-      .members({
-        legCount: 4
-      })
-      .finalize();
-      
-      var Dog = $.mvc.Class()
-      .use(FourLegs)
-      .members({
-        bark: function(){
-          console.log('Woof!');
+      var Programmer = $.mvc.Class().extends(Human)
+      .statics({
+        test: function(){
+          console.log('Programmer static test.');
+          this.parent.test();
         }
-        return this;
+      })
+      .members({
+        test: function(){
+          console.log('Programmer normal test.');
+          this.parent.test();
+          this.static.parent.test();
+          this.parent.static.test();
+        }
       })
       .finalize();
       
-      var myDog = new Dog;
+      
+      Programmer.test();
+      
+      var test = new Programmer;
+      test.test();
     
     </script>
     

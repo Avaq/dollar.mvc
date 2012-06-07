@@ -1,9 +1,10 @@
-;(function(window, _, $, undefined){
+;(function(root, _, $, undefined){
   
-  $.mvc = {};
+  root.$ = ($ || jQuery || Zepto || ($={}));
+  root.$.mvc = {};
   
   _.mixin({
     
   });
   
-})(window, _, (jQuery || Zepto || $ || ($={})));
+})(this, _, $);
