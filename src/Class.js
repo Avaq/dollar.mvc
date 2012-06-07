@@ -1,4 +1,4 @@
-;(function(window, _, $, undefined){
+;(function(root, _, undefined){
   
   //Define the ClassFactory.
   var ClassFactory = $.mvc.ClassFactory = function(Class){
@@ -93,4 +93,4 @@
     
   }
   
-})(window, _, (jQuery || Zepto || $ || ($={})));
+})(this, _);

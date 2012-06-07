@@ -1,4 +1,4 @@
-;(function(window, _, $, undefined){
+;(function(root, _, undefined){
   
   $.mvc = {};
   
@@ -6,4 +6,4 @@
     
   });
   
-})(window, _, (jQuery || Zepto || $ || ($={})));
+})(this, _);
