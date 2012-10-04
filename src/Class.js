@@ -40,7 +40,7 @@
       
     },
     
-    //Change the constructor (default is a noop).
+    //Change the constructor (default is a no-op).
     construct: function(constructor){
       
       //Remember the old class properties.
@@ -85,7 +85,7 @@
       , Class = noop
       , factory = new ClassFactory(Class);
       
-    //Add a default noop constructor.
+    //Add a default no-op constructor.
     factory.construct(noop);
     
     //Return the class-factory.

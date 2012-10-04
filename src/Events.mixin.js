@@ -4,90 +4,95 @@
   var eventSplitter = /[ \t]*,?[ \t]+/
   
     //Expression to split name-spaces.
-    , partSplitter = /:/
+    , partSplitter = /:/;
     
-    //The event object.
-    , Event = function(){
-      this.time = Date.now();
-      this.returnValue = null;
-    };
-    
-  //Create the Event object prototype.
-  _(Event.prototype).extend({
-    
-  });
-  
   //These functions will be added to both the static members and the normal members of the mixin.
   var events = {
     
     //Keeps track of added listeners.
     _eventListeners: {},
     
-    //Allows us to add listeners with this as an instance.
-    on: function(){
+    //Allows us to add listeners.
+    on: function(eventString, callback){
+      
+      if( ! _(callback).isFunction()){
+        throw "callback must be function";
+      }
+      
+      (this._eventListeners[eventString] || (this._eventListeners[eventString] = [])).unshift(callback);
+      
+      return this;
       
     },
     
     //Trigger an event, calling all needed listener-callbacks. Return the Event object.
-    trigger: function(eventString){
+    trigger: function(eventString, e){
       
       //Create the event object.
-      var e = new Event;
+      var e = e || new $.mvc.Event(eventString);
       
-      //Gather all events we want to trigger.
-      var events = eventString.split(eventSplitter);
+      //Gather the event and it's sub events.
+      var parts = eventString.split(partSplitter);
       
-      //Iterate over them.
-      for(var i = 0; i < events.length; i++){
+      //Iterate over them in reversed order.
+      for(var j = parts.length; j > 0; j--){
         
-        //Gather the event and it's sub events.
-        var parts = events[i].split(partSplitter);
+        //Get the key.
+        var key = parts.slice(0, j).join(':');
         
-        //Iterate over them in reversed order.
-        for(var j = parts.length; j > 0; j--){
+        //Find listeners.
+        var listeners = this._eventListeners[key] || [];
+        
+        //Fire callbacks.
+        for(var n = 0; n < listeners.length; n++){
           
-          //Get the key.
-          var key = parts.slice(0, j).join(':');
+          e.returnValue = listeners[n].call(this, e);
           
-          //Find listeners.
-          var listeners = this._eventListeners[key] || [];
-          
-          //Fire callbacks.
-          for(var n = 0; n < listeners.length; n++){
-            
-            e.returnValue = listeners[n].call(this);
-            
-            if(e.stopped()){
-              break;
-            }
-            
+          if(e.stopped >= 3){
+            break;
           }
           
         }
         
+        if(e.stopped >= 2){
+          break;
+        }
+        
       }
+      
+      return e;
       
     }
     
-  }
+  };
   
   //Our events mixin.
-  $.mvc.Events = $.mvc.Mixin()
+  var Events = $.mvc.Events = $.mvc.Mixin()
   
+  //Mix in the event mixin to the Events Mixin. (I know, I know..)
   .statics(events)
+  
+  //Twice. (Yeah yeah!)
   .members(events)
+  
+  //Add static members.
+  .statics({
+    _eventListeners: {}
+  })
   
   //Add normal members.
   .members({
     
-    //Delegate triggers to the static context.
+    _eventListeners: {},
+    
+    //Propagate triggers to the static context.
     trigger: function(){
       
       var e = events.trigger.apply(this, arguments);
       
-      if(!e.stoppedDelegation){
+      if(e.stopped < 1){
         e.instance = this;
-        events.trigger.apply(this.static, arguments)
+        events.trigger.call(this.static, e.eventString, e);
       }
       
       return e;
