@@ -7,7 +7,7 @@
     <title>Javascript MVC</title>
     
     <script type="text/javascript" src="../libs/Underscore-1.3.3.js"></script>
-    <script type="text/javascript" src="../libs/jQuery-1.7.1.js"></script>
+    <script type="text/javascript" src="../libs/jQuery-1.8.3.min.js"></script>
     
     <script type="text/javascript" src="../src/dollar.mvc.js"></script>
     <script type="text/javascript" src="../src/Class.js"></script>
@@ -21,7 +21,7 @@
       var Model = $.mvc.Class()
         
         .construct(function(){
-          //hi
+          this.init();
         })
         
         .use($.mvc.Events)
@@ -33,7 +33,7 @@
       });
       
     var hi = new Model;
-      
+    
     </script>
     
   </head>

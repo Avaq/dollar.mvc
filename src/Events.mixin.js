@@ -9,9 +9,6 @@
   //These functions will be added to both the static members and the normal members of the mixin.
   var events = {
     
-    //Keeps track of added listeners.
-    _eventListeners: {},
-    
     //Allows us to add listeners.
     on: function(eventString, callback){
       
@@ -75,15 +72,18 @@
   //Twice. (Yeah yeah!)
   .members(events)
   
-  //Add static members.
-  .statics({
-    _eventListeners: {}
+  //When the class is created, add the _eventListeners to the static scope.
+  .onCreate(function(){
+    this._eventListeners = {};
+  })
+  
+  //When the instance is created, add the _eventListeners to the dynamic scope.
+  .onInstantiate(function(instance){
+    instance._eventListeners = {};
   })
   
   //Add normal members.
   .members({
-    
-    _eventListeners: {},
     
     //Propagate triggers to the static context.
     trigger: function(){

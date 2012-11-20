@@ -15,6 +15,10 @@
     stopped: -1,
     returnValue: null,
     
+    stop: function(){
+      this.stopped = 1;
+    },
+    
     stopPropagation: function(){
       this.stopped = 2;
     },
