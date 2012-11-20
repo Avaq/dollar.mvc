@@ -1,8 +1,26 @@
 ;(function(root, _, $, undefined){
   
   //Define the ClassFactory.
-  var ClassFactory = $.mvc.ClassFactory = function(Class){
-    this.Class = this.noop = Class;
+  var ClassFactory = $.mvc.ClassFactory = function(constructor){
+    
+    //Create 2 references to the given no-op function.
+    this.Class = this.constructor = constructor;
+    
+    //Add the common class methods to the class.
+    this.Class.__proto__ = Class;
+    this.Class.prototype.__proto__ = Class.prototype;
+    
+    //Add containers for events.
+    this.onInstantiation = [];
+    this.onCreation = [];
+    this.onExtension = [];
+    
+    //Add a method to access the factory.
+    var factory = this;
+    this.Class._getFactory = function(){
+      return factory;
+    }
+    
   }
   
   //Extend the factory with functions that can extend the class.
@@ -18,11 +36,14 @@
       this.Class.prototype.__proto__ = this.Class.prototype.parent = parent.prototype;
       
       //If we haven't defined our own constructor, use a function that will call the parent.
-      if(this.Class == this.noop){
+      if(this.Class == this.constructor){
         this.construct(function(){
           parent.apply(this, arguments);
         });
       }
+      
+      //Call the extension events for the extended class.
+      callEvents(parent._getFactory().onExtension, this.Class, [parent]);
       
       //Enable chaining.
       return this;
@@ -71,26 +92,93 @@
       
     },
     
+    //Bind an instantiation event.
+    onInstatiate: function(callback){
+      
+      this.onInstantiation.push(callback);
+      
+      return this;
+      
+    },
+    
+    //Bind a creation event.
+    onCreate: function(callback){
+      
+      this.onCreation.push(callback);
+      
+      return this;
+      
+    },
+    
+    //Bind an extension event.
+    onExtend: function(callback){
+      
+      this.onExtension.push(callback);
+      
+      return this;
+      
+    },
+    
     //Returns the class.
     finalize: function(){
+      
+      //Call the creation events.
+      callEvents(this.onCreation, this.Class, []);
+      
+      //Return the class.
       return this.Class;
+      
     }
     
   });
-
+  
+  //Iterates over [events], calling each function with [context] and [arguments].
+  function callEvents(events, context, arguments){
+    
+    for(var i = 0; i < events.length; i++){
+      events[i].apply(context, arguments);
+    }
+    
+  }
+  
+  //Define the Class function. This creates classes.
   var Class = $.mvc.Class = function(){
     
     //Define the class and its factory.
-    var noop = function(){}
-      , Class = noop
+    var constructor = function(){
+        this.init();
+      }
+      , Class = constructor
       , factory = new ClassFactory(Class);
       
-    //Add a default no-op constructor.
-    factory.construct(noop);
+    //Add a default constructor.
+    factory.construct(constructor);
     
     //Return the class-factory.
     return factory;
     
   }
+  
+  //Define the common interface for all classes.
+  _(Class).extend({
+    
+  });
+  
+  //Define the common interface for all instances of classes.
+  _(Class.prototype).extend({
+    
+    //This function calls the instantiation events.
+    init: function()
+    {
+      
+      //Call the instantiation events.
+      callEvents(this.static._getFactory().onInstantiation, this.static, [this]);
+      
+      //Enable chaining.
+      return this;
+      
+    }
+    
+  });
   
 })(this, _, $);

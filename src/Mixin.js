@@ -10,6 +10,11 @@
     this.mixins = [];
     this.statics = {};
     this.members = {};
+    this.classEvents = {
+      create: [],
+      instantiate: [],
+      extend: []
+    };
   };
   
   //Extend the factory with methods that build the mixin.
@@ -37,6 +42,33 @@
     members: function(map){
       _(this.Mixin.members).extend(map);
       return this;
+    },
+    
+    //Bind an instantiation event.
+    onInstantiate: function(callback){
+      
+      this.Mixin.classEvents.instantiate.push(callback);
+      
+      return this;
+      
+    },
+    
+    //Bind a creation event.
+    onCreate: function(callback){
+      
+      this.Mixin.classEvents.create.push(callback);
+      
+      return this;
+      
+    },
+    
+    //Bind an extension event.
+    onExtend: function(callback){
+      
+      this.Mixin.classEvents.extend.push(callback);
+      
+      return this;
+      
     },
     
     //Return the mixin.
@@ -79,6 +111,11 @@
       
       //Add normal members.
       this.members(mixin.members);
+      
+      //Add class events.
+      this.onCreation = this.onCreation.concat(mixin.classEvents.create);
+      this.onInstantiation = this.onInstantiation.concat(mixin.classEvents.instantiate);
+      this.onExtension = this.onExtension.concat(mixin.classEvents.extend);
       
       //Enable chaining.
       return this;
