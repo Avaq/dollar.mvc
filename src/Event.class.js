@@ -15,7 +15,7 @@
     stopped: -1,
     returnValue: null,
     
-    stop: function(){
+    stopStaticPropagation: function(){
       this.stopped = 1;
     },
     

@@ -29,10 +29,24 @@
         .finalize();
         
       Model.on('derp', function(){
-        alert('derped');
+        alert('hi from static');
       });
       
     var hi = new Model;
+    
+    hi.on('derp:hoi', function(e){
+      alert('hi from sub: hoi');
+      e.stopPropagation();
+    });
+    
+    hi.on('derp:hoi', function(e){
+      alert('second hi from sub: hoi');
+      e.stopImmediatePropagation();
+    });
+    
+    hi.on('derp', function(){
+      alert('hi from derp');
+    });
     
     </script>
     
