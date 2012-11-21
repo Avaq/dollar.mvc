@@ -9,6 +9,9 @@
   //These functions will be added to both the static members and the normal members of the mixin.
   var events = {
     
+    //Add the event listeners object as a property.
+    _eventListeners: $.mvc.Property.object,
+    
     //Allows us to add listeners.
     on: function(eventString, callback){
       
@@ -71,16 +74,6 @@
   
   //Twice. (Yeah yeah!)
   .members(events)
-  
-  //When the class is created, add the _eventListeners to the static scope.
-  .onCreate(function(){
-    this._eventListeners = {};
-  })
-  
-  //When the instance is created, add the _eventListeners to the dynamic scope.
-  .onInstantiate(function(instance){
-    instance._eventListeners = {};
-  })
   
   //Add normal members.
   .members({

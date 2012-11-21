@@ -1,5 +1,23 @@
 ;(function(root, _, $, undefined){
   
+  /**
+  * HELPERS
+  */
+  
+  //Iterates over [events], calling each function with [context] and [arguments].
+  function callEvents(events, context, arguments){
+    
+    for(var i = 0; i < events.length; i++){
+      events[i].apply(context, arguments);
+    }
+    
+  }
+  
+  
+  /**
+  * CLASS FACTORY
+  */
+  
   //Define the ClassFactory.
   var ClassFactory = $.mvc.ClassFactory = function(constructor){
     
@@ -53,8 +71,37 @@
     //Add static members to the class.
     statics: function(map){
       
+      //Keep a reference to this.
+      var Factory = this;
+      
       //Add the members in the map to the Class object.
-      _(this.Class).extend(map);
+      _(map).each(function(member, key){
+        
+        //Check if we need to set unwrappers.
+        if(_(Property).contains(member)){
+          
+          //Create the unwrapper.
+          var onCreate = function(){
+            this[key] = member();
+          };
+          
+          //Use the unwrapper when the class gets finalized.
+          Factory.onCreate(onCreate);
+          
+          //Add the unwrapper to subclasses when they are created.
+          Factory.onExtend(function onExtend(){
+            this.onCreate(onCreate);
+            this.onExtend(onExtend)
+          });
+          
+        }
+        
+        //Otherwise simply set the member.
+        else{
+          Factory.Class[key] = member;
+        }
+        
+      });
       
       //Enable chaining.
       return this;
@@ -84,16 +131,52 @@
     //Add normal members to the class.
     members: function(map){
       
-      //Add the members in the map to the Class' prototype.
-      _(this.Class.prototype).extend(map);
+      //Keep a reference to this.
+      var Factory = this;
       
+      //Add the members in the map to the Class object.
+      _(map).each(function(member, key){
+        
+        //Check if we need to set unwrappers.
+        if(_(Property).contains(member)){
+          
+          //Create the unwrapper.
+          var onCreate = function(){
+              this.prototype[key] = member();
+            }
+            , onInstantiate = function(instance){
+              instance[key] = member();
+            }
+          
+          //Use an unwrapper when the class gets finalized.
+          Factory.onCreate(onCreate);
+          
+          //Use the other unwrapper when the class gets instantiated.
+          Factory.onInstantiate(onInstantiate);
+          
+          //Add the unwrappers to subclasses when they are created.
+          Factory.onExtend(function onExtend(){
+            this.onCreate(onCreate);
+            this.onInstantiate(onInstantiate);
+            this.onExtend(onExtend);
+          });
+          
+        }
+        
+        //Otherwise simply set the member.
+        else{
+          Factory.Class.prototype[key] = member;
+        }
+        
+      });
+            
       //Enable chaining.
       return this;
       
     },
     
     //Bind an instantiation event.
-    onInstatiate: function(callback){
+    onInstantiate: function(callback){
       
       this.onInstantiation.push(callback);
       
@@ -132,14 +215,10 @@
     
   });
   
-  //Iterates over [events], calling each function with [context] and [arguments].
-  function callEvents(events, context, arguments){
-    
-    for(var i = 0; i < events.length; i++){
-      events[i].apply(context, arguments);
-    }
-    
-  }
+  
+  /**
+  * CLASS
+  */
   
   //Define the Class function. This creates classes.
   var Class = $.mvc.Class = function(){
@@ -180,5 +259,15 @@
     }
     
   });
+  
+  
+  /**
+  * CLASS PROPERTY
+  */
+  
+  var Property = $.mvc.Property = {
+    array: function(){return []},
+    object: function(){return {}}
+  }
   
 })(this, _, $);

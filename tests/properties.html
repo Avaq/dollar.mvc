@@ -18,34 +18,17 @@
     
     <script type="text/javascript">
       
-      var Model = $.mvc.Class()
-        
-        .construct(function(){
-          this.init();
-        })
-        
-        .use($.mvc.Events)
-        
-        .finalize();
-        
-      Model.on('derp', function(){
-        alert('hi from static');
-      });
+      var MyClass = $.mvc.Class()
       
-    var hi = new Model;
-    
-    hi.on('derp:hoi', function(e){
-      alert('hi from sub: hoi');
-    });
-    
-    hi.on('derp:hoi', function(e){
-      alert('second hi from sub: hoi');
-      e.stopStaticPropagation();
-    });
-    
-    hi.on('derp', function(){
-      alert('hi from derp');
-    });
+        .members({
+          
+          myArr: $.mvc.Property.array
+          
+        })
+      
+      .finalize();
+      
+    var myObject = new MyClass;
     
     </script>
     

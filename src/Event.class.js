@@ -25,6 +25,18 @@
     
     stopImmediatePropagation: function(){
       this.stopped = 3;
+    },
+    
+    isStaticPropagationStopped: function(){
+      return this.stopped > 0;
+    },
+    
+    isPropagationStopped: function(){
+      return this.stopped > 1;
+    },
+    
+    isImmediatePropagationStopped: function(){
+      return this.stopped > 2;
     }
     
   })
